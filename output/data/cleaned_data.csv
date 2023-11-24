@@ -1,4 +1,4 @@
-Total price,District,Area,Furnished,Bedroom,Living/dining room,Total floors,Detailed floor,Facing south
+Total_Price,District,Area,Furnished,Bedroom,Living_Room,Total_Floors,Detailed_Floor,Facing_South
 71.8,Gaochun,94.54,Fully Furnished,3,2,27,19,0
 88,Gaochun,126.84,Fully Furnished,4,2,23,17,0
 100,Gaochun,129.1,Other,4,2,27,19,1

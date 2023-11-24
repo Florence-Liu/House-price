@@ -139,20 +139,20 @@ merged_data <- merged_data |>
          `Living/dining room`, Total_Floors, Detailed_Floor, Facing_South)
 
 merged_data <- merged_data |>
-  rename(Furnished = Furnished_Eng, `Total floors` = Total_Floors,
-         `Detailed floor` = Detailed_Floor, `Facing south` = Facing_South)
+  rename(Furnished = Furnished_Eng, Total_Price = `Total price`,
+         Living_Room = `Living/dining room`)
 
 ### Convert variable types
 
-merged_data$`Total price` <- as.numeric(merged_data$`Total price`)
+merged_data$Total_Price <- as.numeric(merged_data$Total_Price)
 merged_data$District <- as.character(merged_data$District)
 merged_data$Area <- as.numeric(merged_data$Area)
 merged_data$Furnished <- as.character(merged_data$Furnished)
 merged_data$Bedroom <- as.numeric(merged_data$Bedroom)
-merged_data$`Living/dining room` <- as.numeric(merged_data$`Living/dining room`)
-merged_data$`Total floors` <- as.numeric(merged_data$`Total floors`)
-merged_data$`Detailed floor` <- as.numeric(merged_data$`Detailed floor`)
-merged_data$`Facing south` <- as.factor(merged_data$`Facing south`)
+merged_data$Living_Room <- as.numeric(merged_data$Living_Room)
+merged_data$Total_Floors <- as.numeric(merged_data$Total_Floors)
+merged_data$Detailed_Floor <- as.numeric(merged_data$Detailed_Floor)
+merged_data$Facing_South <- as.factor(merged_data$Facing_South)
 
 
 
@@ -169,15 +169,15 @@ sum(is.na(cleaned_data)) == 0
 
 
 ### Check variable types
-cleaned_data$`Total price` |> class() == "numeric"
+cleaned_data$Total_Price |> class() == "numeric"
 cleaned_data$District |> class() == "character"
 cleaned_data$Area |> class() == "numeric"
 cleaned_data$Furnished |> class() == "character"
 cleaned_data$Bedroom |> class() == "numeric"
-cleaned_data$`Living/dining room` |> class() == "numeric"
-cleaned_data$`Total floors` |> class() == "numeric"
-cleaned_data$`Detailed floor` |> class() == "numeric"
-cleaned_data$`Facing south` |> class() == "factor"
+cleaned_data$Living_Room |> class() == "numeric"
+cleaned_data$Total_Floors |> class() == "numeric"
+cleaned_data$Detailed_Floor |> class() == "numeric"
+cleaned_data$Facing_South |> class() == "factor"
 
 
 ### Check the unique values in District and Furnished
@@ -186,7 +186,7 @@ cleaned_data$Furnished |> unique()
 
 
 ### Check Total price and Area are positive
-cleaned_data$`Total price` |> min() > 0
+cleaned_data$Total_Price |> min() > 0
 cleaned_data$Area |> min() > 0
 
 
