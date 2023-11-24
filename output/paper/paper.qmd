@@ -18,8 +18,74 @@ bibliography: references.bib
 # Data
 
 
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+
+#### Workspace setup ####
+library(tidyverse)
+library(knitr)
+library(here)
+library(randomForest)
+
+#### Read in the cleaned data ####
+data <- read_csv(here("output/data/cleaned_data.csv"), 
+                 show_col_types = FALSE)
+
+#### Split training and testing sets ####
+set.seed(777)
+trainid <- sample(nrow(data), 0.8*nrow(data))
+train <- data[trainid,]
+test <- data[-trainid,]
+```
+
+
+```{r}
+summary(data)
+```
+```{r}
+# Install and load the required packages
+library(leaflet)
+
+# Nanjing coordinates
+nanjing_coords <- c(32.0603, 118.7969)  # Latitude, Longitude
+
+# Create a map centered around Nanjing
+nanjing_map <- leaflet() %>%
+  setView(lng = nanjing_coords[2], lat = nanjing_coords[1], zoom = 12) %>%
+  addTiles()  # Add default map tiles
+
+# Print the map
+print(nanjing_map)
+
+```
+
+```{r}
+data |> ggplot(aes(y=Total_Price, x=Area, color=District)) +
+  geom_point() +
+  geom_smooth(method = lm)
+```
+
+
 # Model
 
+```{r}
+model_mlg <- lm(Total_Price ~., data = train)
+summary(model_mlg)
+predict_mlg <- predict(model_mlg, newdata = test)
+mean((test$Total_Price-predict_mlg)^2)
+```
+
+```{r}
+model_rf <- randomForest(Total_Price ~., data=train)
+model_rf
+predict_rf <- predict(model_rf, newdata = test)
+mean((test$Total_Price-predict_rf)^2)
+
+varImpPlot(model_rf)
+```
 
 # Result
 
