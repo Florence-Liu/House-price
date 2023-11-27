@@ -49,7 +49,6 @@ data_yuhuatai$District <- rep('Yuhuatai', nrow(data_yuhuatai))
 ### Add row names
 
 row_title <- c('Description', 'Location', 'Structural attributes', 'Total price', 'Unit price', 'District')
-district <- c('gulou', 'gaochun', 'jiangning', 'jianye', 'jurong', 'lishui', 'liuhe', 'pukou', 'qinhuai', 'qixia', 'xuanwu', 'yuhuatai')
 colnames(data_gaochun) <- row_title
 colnames(data_gulou) <- row_title
 colnames(data_jiangning) <- row_title
