@@ -6,7 +6,8 @@
 # License: MIT
 
 #### Data expectations ####
-# Total_price would be positive in range 10 to 7000 with more dense in range 200 to 1000
+# Total_Price would be positive in range 10 to 7000 with more weights in range 200 to 1000
+# Unit_Price would be positive in range 1000 to 100000 with more weights in range 5000 to 70000
 # Areas would be positive in range 20 to 1000
 # District would be characters with 12 unique values
 # Furnished would be characters with 4 unique values
@@ -26,6 +27,11 @@ n <- 500 # sample size of simulation
 sim_gamma_total_price <- rgamma(n, scale = 300, shape = 2) # Simulate gamma distribution
 sim_total_price <- pmax(10, pmin(7000, sim_gamma_total_price)) # Adjust the simulated values to the desired range
 sim_total_price <- as.integer(sim_total_price) # Convert to integers
+
+### Simulate Unit_Price
+sim_gamma_unit_price <- rgamma(n, scale = 10000, shape = 2) # Simulate gamma distribution
+sim_unit_price <- pmax(1000, pmin(100000, sim_gamma_unit_price)) # Adjust the simulated values to the desired range
+sim_unit_price <- as.integer(sim_unit_price) # Convert to integers
 
 ### Simulate Area
 sim_gamma_area <- rgamma(n, scale = 30, shape = 2) # Simulate gamma distribution
@@ -61,16 +67,17 @@ prob_south <- 0.45
 sim_facing_south <- as.factor(rbinom(n, size = 1, prob = prob_south))
 
 ### Generate simulated dataset
-simulated_data <- data.frame(sim_total_price, sim_district, sim_area, 
-                             sim_furnished, sim_bedroom, sim_livingroom,
-                             sim_total_floor, sim_detailed_floor, sim_facing_south)
-
+simulated_data <- data.frame(sim_total_price, sim_unit_price, sim_district, 
+                             sim_area, sim_furnished, sim_bedroom, 
+                             sim_livingroom, sim_total_floor, 
+                             sim_detailed_floor, sim_facing_south)
 
 
 #### Test data ####
 
 ### Check distribution via histograms and barplots
 hist(simulated_data$sim_total_price)
+hist(simulated_data$sim_unit_price)
 hist(simulated_data$sim_area)
 hist(simulated_data$sim_bedroom)
 hist(simulated_data$sim_livingroom)
@@ -82,6 +89,7 @@ barplot(table(simulated_data$sim_furnished))
 
 ### Check variable types
 simulated_data$sim_total_price |> class() == "integer"
+simulated_data$sim_unit_price |> class() == "integer"
 simulated_data$sim_district |> class() == "character"
 simulated_data$sim_area |> class() == "numeric"
 simulated_data$sim_furnished |> class() == "character"
@@ -99,6 +107,7 @@ simulated_data$sim_furnished |> unique()
 
 ### Check Total price and Area are positive
 simulated_data$sim_total_price |> min() > 0
+simulated_data$sim_unit_price |> min() > 0
 simulated_data$sim_area |> min() > 0
 
 

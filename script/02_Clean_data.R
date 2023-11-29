@@ -130,20 +130,22 @@ merged_data <- merged_data |>
 merged_data$`Living/dining room` <- gsub("厅", "", merged_data$`Living/dining room`)
 merged_data$Area <- gsub("平米", "", merged_data$`Area`)
 merged_data$`Unit price` <- gsub("元/平", "", merged_data$`Unit price`)
+merged_data$`Unit price` <- gsub(",", "", merged_data$`Unit price`)
 
 
 ### Select variables of interest and change variable names
 merged_data <- merged_data |>
-  select(`Total price`, District, Area, Furnished_Eng, Bedroom, 
+  select(`Total price`,`Unit price`, District, Area, Furnished_Eng, Bedroom, 
          `Living/dining room`, Total_Floors, Detailed_Floor, Facing_South)
 
 merged_data <- merged_data |>
   rename(Furnished = Furnished_Eng, Total_Price = `Total price`,
-         Living_Room = `Living/dining room`)
+         Living_Room = `Living/dining room`, Unit_Price = `Unit price`)
 
 ### Convert variable types
 
 merged_data$Total_Price <- as.numeric(merged_data$Total_Price)
+merged_data$Unit_Price <- as.numeric(merged_data$Unit_Price)
 merged_data$District <- as.character(merged_data$District)
 merged_data$Area <- as.numeric(merged_data$Area)
 merged_data$Furnished <- as.character(merged_data$Furnished)
@@ -152,8 +154,6 @@ merged_data$Living_Room <- as.numeric(merged_data$Living_Room)
 merged_data$Total_Floors <- as.numeric(merged_data$Total_Floors)
 merged_data$Detailed_Floor <- as.numeric(merged_data$Detailed_Floor)
 merged_data$Facing_South <- as.factor(merged_data$Facing_South)
-
-
 
 
 ### Remove missing values
@@ -169,6 +169,7 @@ sum(is.na(cleaned_data)) == 0
 
 ### Check variable types
 cleaned_data$Total_Price |> class() == "numeric"
+cleaned_data$Unit_Price |> class() == "numeric"
 cleaned_data$District |> class() == "character"
 cleaned_data$Area |> class() == "numeric"
 cleaned_data$Furnished |> class() == "character"
@@ -184,8 +185,9 @@ cleaned_data$District |> unique()
 cleaned_data$Furnished |> unique()
 
 
-### Check Total price and Area are positive
+### Check Total price, Unit price, and Area are positive
 cleaned_data$Total_Price |> min() > 0
+cleaned_data$Unit_Price |> min() > 0
 cleaned_data$Area |> min() > 0
 
 
