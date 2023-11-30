@@ -1,5 +1,5 @@
 #### Preamble ####
-# Purpose: Clean datasets obtained by web scraping using Python about price of house in sale and relevant variables in 12 districts in Nanjing
+# Purpose: Clean datasets obtained by web scraping using Python about price of house in sale and relevant variables in 11 districts in Nanjing
 # Author: Yufei Liu
 # Date: 22 Nov 2023
 # Contact: florence.liu@mail.utoronto.ca
@@ -14,14 +14,13 @@ library(stringr)
 
 
 #### Download data ####
-## Scrapped 12 original datasets for 12 district in Nanjing from Lianjia.com 
+## Scrapped 11 original datasets for 12 district in Nanjing from Lianjia.com 
 ## Import the datasets from input/data folder
 
 data_gulou <- read.csv('input/data/raw data gulou.csv')
 data_jianye <- read.csv('input/data/raw data jianye.csv')
 data_gaochun <- read.csv('input/data/raw data gaochun.csv')
 data_jiangning <- read.csv('input/data/raw data jiangning.csv')
-data_jurong <- read.csv('input/data/raw data jurong.csv')
 data_lishui <- read.csv('input/data/raw data lishui.csv')
 data_liuhe <- read.csv('input/data/raw data liuhe.csv')
 data_pukou <- read.csv('input/data/raw data pukou.csv')
@@ -37,7 +36,6 @@ data_gaochun$District <- rep('Gaochun', nrow(data_gaochun))
 data_gulou$District <- rep('Gulou', nrow(data_gulou))
 data_jiangning$District <- rep('Jiangning', nrow(data_jiangning))
 data_jianye$District <- rep('Jianye', nrow(data_jianye))
-data_jurong$District <- rep('Jurong', nrow(data_jurong))
 data_lishui$District <- rep('Lishui', nrow(data_lishui))
 data_liuhe$District <- rep('Liuhe', nrow(data_liuhe))
 data_pukou$District <- rep('Pukou', nrow(data_pukou))
@@ -53,7 +51,6 @@ colnames(data_gaochun) <- row_title
 colnames(data_gulou) <- row_title
 colnames(data_jiangning) <- row_title
 colnames(data_jianye) <- row_title
-colnames(data_jurong) <- row_title
 colnames(data_lishui) <- row_title
 colnames(data_liuhe) <- row_title
 colnames(data_pukou) <- row_title
@@ -66,7 +63,7 @@ colnames(data_yuhuatai) <- row_title
 ### Merge datasets
 merged_data <- data_gaochun |> full_join(data_gulou) |> 
   full_join(data_jiangning) |> full_join(data_jianye) |>
-  full_join(data_jurong) |> full_join(data_lishui) |>
+  full_join(data_lishui) |>
   full_join(data_liuhe) |> full_join(data_pukou) |>
   full_join(data_qinhuai) |> full_join(data_qixia) |>
   full_join(data_xuanwu) |> full_join(data_yuhuatai)

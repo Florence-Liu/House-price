@@ -9,7 +9,7 @@
 # Total_Price would be positive in range 10 to 7000 with more weights in range 200 to 1000
 # Unit_Price would be positive in range 1000 to 100000 with more weights in range 5000 to 70000
 # Areas would be positive in range 20 to 1000
-# District would be characters with 12 unique values
+# District would be characters with 11 unique values
 # Furnished would be characters with 4 unique values
 # Bedroom, Living_Room, Total_Floors, Detailed_Floors would be positive integers
 # Facing_South would be a dummy variable with 0 representing facing south
@@ -38,7 +38,7 @@ sim_gamma_area <- rgamma(n, scale = 30, shape = 2) # Simulate gamma distribution
 sim_area <- pmax(20, pmin(1000, sim_gamma_area)) # Adjust the simulated values to the desired range
 
 ### Simulate District
-district <- c('gulou', 'gaochun', 'jiangning', 'jianye', 'jurong', 'lishui', 'liuhe', 'pukou', 'qinhuai', 'qixia', 'xuanwu', 'yuhuatai')
+district <- c('gulou', 'gaochun', 'jiangning', 'jianye', 'lishui', 'liuhe', 'pukou', 'qinhuai', 'qixia', 'xuanwu', 'yuhuatai')
 sim_district <- sample(district, n, replace = TRUE)
 
 ### Simulate Furnished
