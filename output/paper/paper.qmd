@@ -1,5 +1,5 @@
 ---
-title: "House Price in Nanjing: Comparing Multiple Linear Regression and Random Forest"
+title: "House Price in Nanjing: Exploring Distribution of House Price and Performing Prediction with Multiple Linear Regression and Random Forest"
 author: "Yufei Liu"
 thanks: "Code and data are available at: https://github.com/Florence-Liu/house-price"
 date: today
