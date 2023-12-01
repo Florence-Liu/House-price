@@ -17,7 +17,7 @@ bibliography: references.bib
 Since the population in China has grown a lot in recent years.
 
 # Data
-
+## Data description
 
 ```{r}
 #| echo: false
@@ -29,48 +29,124 @@ Since the population in China has grown a lot in recent years.
 library(tidyverse)
 library(knitr)
 library(here)
+library(latex2exp)
 library(randomForest)
+library(corrplot)
+library(Metrics)
+library(modelsummary)
 
 #### Read in the cleaned data ####
 data <- read_csv(here("output/data/cleaned_data.csv"), 
                  show_col_types = FALSE)
 
-#### Split training and testing sets ####
-set.seed(777)
-trainid <- sample(nrow(data), 0.8*nrow(data))
-train <- data[trainid,]
-test <- data[-trainid,]
 ```
 
 
 ```{r}
 #| label: tbl-data
-#| fig-cap: Description for variables
+#| tbl-cap: Description for variables
 #| echo: false
 #| message: false
 #| warning: false
 
 var <- c("Total_Price", "Unit_Price", "District", "Area", "Furnished", "Bedroom", "Living_Room", "Total_Floors", "Detailed_Floor", "Facing_South")
-type <- c("Continuous", "Continuous", "Character", "Continuous", "Character", "Continuous", "Continuous", "Continuous", "Continuous", "Dummy")
-def <- c("Total house price in yuan", "Unit house price in yuan/$m^2$", "District where the house is located", "Floor area of the house in $m^2$ ", "Decoration status of the house", "Number of bedrooms", "Number of living/dining rooms", "Total height in floor of the building", "Floor level of the house", "Whether the house is facing south")
+type <- c("Continuous", "Continuous", "Character", "Continuous", "Character", "Discrete", "Discrete", "Discrete", "Discrete", "Dummy")
+def <- c("Total house price in yuan", "Unit house price in yuan/$m^2$", "District where the house is located", "Floor area of the house in $m^2$ ", "Decoration status of the house", "Number of bedrooms", "Number of living/dining rooms", "Total floors of the building", "Floor level of the house", "Whether the house is facing south")
 kable(data.frame(var, type, def), col.names = c("Variable", "Type", "Definition"))
 ```
 
-
+## Data visualiztion
 ```{r}
 #| label: tbl-price
-#| fig-cap: Description for variables
+#| tbl-cap: Descriptive statistics about house price in each districts
 #| echo: false
 #| message: false
 #| warning: false
 
 data |> group_by(District) |>
   summarise(avg_total = round(mean(Total_Price)), 
-            avg_unit = round(mean(Unit_Price))) |>
-  kable(col.names = c("District","Average total price","Average unit price"))
+            avg_unit = round(mean(Unit_Price)),
+            avg_area = round(mean(Area))) |>
+  kable(col.names = c("District", "Average total price",
+                      "Average unit price", "Average floor area"))
 ```
 
+```{r}
+#| label: fig-con
+#| echo: false
+#| message: false
+#| warning: false
 
+df_con <- data |> select(Total_Price, Unit_Price, Area)
+df_con <- gather(df_con)
+
+df_con |> ggplot(aes(x = value)) +
+  geom_histogram(fill = "#A8D8B9") +
+  facet_wrap(~key, scales = "free") +
+  theme_minimal()
+
+```
+```{r}
+#| label: fig-dis
+#| echo: false
+#| message: false
+#| warning: false
+
+df_dis <- data |> select(Bedroom, Living_Room, Total_Floors, Detailed_Floor)
+df_dis <- gather(df_dis)
+
+df_dis |> ggplot(aes(x = value)) +
+  geom_bar(fill = "#A8D8B9") +
+  facet_wrap(~key, scales = "free") +
+  theme_minimal() 
+```
+```{r}
+#| label: fig-char
+#| echo: false
+#| message: false
+#| warning: false
+#| layout-ncol: 2
+
+
+data |> group_by(District, Facing_South) |>
+  summarise(n = n()) |>
+  ggplot(aes(x = District, y = n, fill = factor(Facing_South))) +
+  geom_bar(stat = "identity") +
+  theme_minimal() +
+  scale_fill_manual(values = c("#A8D8B9", "#FFD966"))
+
+data |> group_by(District, Furnished) |>
+  summarise(n = n()) |>
+  ggplot(aes(x = District, y = n, fill = factor(Furnished))) +
+  geom_bar(stat = "identity") +
+  theme_minimal() +
+  scale_fill_manual(values = c("#7FCCE5", "#FF9A8B", "#A8D8B9", "#FFD966"))
+```
+
+```{r}
+#| label: fig-area
+#| echo: false
+#| message: false
+#| warning: false
+
+data |>
+  ggplot(aes(x=Area, y=Total_Price)) +
+  geom_point(alpha = 0.3, size = 0.8, color = "lightgoldenrod") +
+  geom_point(data = transform(data, District = "All in Nanjing"), 
+             alpha = 0.5, size = 0.8, color = "lightgoldenrod") +
+  geom_smooth(data = transform(data, District = "All in Nanjing"),
+              aes(color = "Non-linear"), se=F, size=0.5) +
+  geom_smooth(data = transform(data, District = "All in Nanjing"),
+              method = "lm", aes(color = "Linear"), se=F, size=0.5) +
+  facet_wrap(~District, scales = "free") +
+  theme_minimal() +
+  geom_smooth(aes(color = "Non-linear"), se=F, size=0.5) +
+  geom_smooth(method = "lm", aes(color = "Linear"), se=F, size=0.5) +
+  labs(x = TeX(r"(Area in $m^2$)"), y = "Total Price") +
+  scale_colour_manual(name = "Line", values = c("steelblue3", "indianred3")) +
+  theme(legend.position = "bottom", axis.text = element_text(size = 6),
+        strip.text.x = element_text(size = 8))
+```
 ```{r}
 #| label: fig-price
 #| echo: false
@@ -78,10 +154,30 @@ data |> group_by(District) |>
 #| warning: false
 
 data |>
-  ggplot(aes(x = as.factor(Facing_South), y = Total_Price)) +
-  geom_bar(stat = "identity", position = "dodge") +
-  theme_minimal()
+  ggplot(aes(x=Unit_Price, y=Total_Price)) +
+  geom_point(alpha = 0.3, size = 0.8, color = "lightgoldenrod") +
+  geom_point(data = transform(data, District = "All in Nanjing"), 
+             alpha = 0.3, size = 0.8, color = "lightgoldenrod") +
+  geom_smooth(data = transform(data, District = "All in Nanjing"),
+              aes(color = "Non-linear"), se=F, size=0.5) +
+  geom_smooth(data = transform(data, District = "All in Nanjing"),
+              method = "lm", aes(color = "Linear"), se=F, size=0.5) +
+  facet_wrap(~District, scales = "free") +
+  theme_minimal() +
+  geom_smooth(aes(color = "Non-linear"), se=F, size=0.5) +
+  geom_smooth(method = "lm", aes(color = "Linear"), se=F, size=0.5) +
+  labs(x = TeX(r"(Area in $m^2$)"), y = "Total Price") +
+  scale_colour_manual(name = "Line", values = c("steelblue3", "indianred3")) +
+  theme(legend.position = "bottom", axis.text = element_text(size = 6),
+        strip.text.x = element_text(size = 8))
 ```
+
+
+
+
+
+
+
 
 
 
@@ -92,29 +188,123 @@ data |>
 #| warning: false
 #| message: false
 #| include: false
-
-model_mlg <- lm(Total_Price ~., data = train)
-summary(model_mlg)
-predict_mlg <- predict(model_mlg, newdata = test)
-mean((test$Total_Price-predict_mlg)^2)
+#### Split training and testing sets ####
+set.seed(777)
+trainid <- sample(nrow(data), 0.8*nrow(data))
+train <- data[trainid,]
+test <- data[-trainid,]
 ```
 
 ```{r}
+#| label: model
 #| echo: false
 #| warning: false
 #| message: false
-#| include: false
 
-model_rf <- randomForest(Total_Price ~., data=train)
-model_rf
-predict_rf <- predict(model_rf, newdata = test)
-mean((test$Total_Price-predict_rf)^2)
+model_mlg <- lm(Total_Price ~., data = train)
+#summary(model_mlg)
 
-varImpPlot(model_rf)
+model_rf <- randomForest(Total_Price ~., data=train, importance = TRUE)
+
+#varImpPlot(model_rf)
 ```
+
 
 # Result
 
+```{r}
+#| label: rf
+#| echo: false
+#| warning: false
+#| message: false
+
+predict_rf_test <- predict(model_rf, newdata = test)
+mae_rf_test <- round(mae(test$Total_Price, predict_rf_test),1)
+rmse_rf_test <- round(rmse(test$Total_Price, predict_rf_test),1)
+
+predict_rf_train <- predict(model_rf, newdata = train)
+mae_rf_train <- round(mae(train$Total_Price, predict_rf_train),1)
+rmse_rf_train <- round(rmse(train$Total_Price, predict_rf_train),1)
+
+```
+
+```{r}
+#| label: mlg
+#| echo: false
+#| warning: false
+#| message: false
+
+predict_mlg_test <- predict(model_mlg, newdata = test)
+mae_mlg_test <- round(mae(test$Total_Price, predict_mlg_test),1)
+rmse_mlg_test <- round(rmse(test$Total_Price, predict_mlg_test),1)
+
+predict_mlg_train <- predict(model_mlg, newdata = train)
+mae_mlg_train <- round(mae(train$Total_Price, predict_mlg_train),1)
+rmse_mlg_train <- round(rmse(train$Total_Price, predict_mlg_train),1)
+
+```
+
+```{r}
+#| label: tbl-metrics
+#| tbl-cap: Summary of different metrics for test and train data for two models
+#| echo: false
+#| message: false
+#| warning: false
+
+MAE <- c(mae_mlg_train, mae_mlg_test, mae_rf_train, mae_rf_test)
+RMSE <- c(rmse_mlg_train, rmse_mlg_test, rmse_rf_train, rmse_rf_test)
+Model <- c("MlG train", "MLG test", "RF train", "RF test")
+metrics <- data.frame(Model, MAE, RMSE)
+kable(metrics)
+  
+```
+
+```{r}
+#| label: tbl-model
+#| tbl-cap: Summary of the multiple linear regression model
+#| echo: false
+#| message: false
+#| warning: false
+modelsummary(model_mlg)
+
+```
+
+```{r}
+#| label: fig-model
+#| echo: false
+#| message: false
+#| warning: false
+#| 
+ImpData <- as.data.frame(importance(model_rf))
+ImpData$Var.Names <- row.names(ImpData)
+
+ggplot(ImpData, aes(x=Var.Names, y=`%IncMSE`)) +
+  geom_segment( aes(x=Var.Names, xend=Var.Names, y=0, yend=`%IncMSE`), color="skyblue") +
+  geom_point(aes(size = IncNodePurity), color="blue", alpha=0.6) +
+  theme_light() +
+  coord_flip() +
+  theme(
+    legend.position="bottom",
+    panel.grid.major.y = element_blank(),
+    panel.border = element_blank(),
+    axis.ticks.y = element_blank()
+  )
+
+```
+
+```{r}
+#| label: fig-cor
+#| echo: false
+#| warning: false
+#| message: false
+
+cor_matrix <- cor(data.frame(data$Total_Price, data$Unit_Price, data$Area, data$Bedroom, data$Living_Room, data$Total_Floors, data$Detailed_Floor, data$Facing_South))
+
+corrplot(cor_matrix)
+```
+
+
+RUNNING TIME
 
 # Discussion
 
