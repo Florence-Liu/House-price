@@ -1,10 +1,10 @@
 ---
-title: "House price"
+title: "House Price in Nanjing: Comparing Multiple Linear Regression and Random Forest"
 author: "Yufei Liu"
 thanks: "Code and data are available at: https://github.com/Florence-Liu/house-price"
 date: today
 date-format: long
-abstract: "."
+abstract: "House price in Nanjing has grown rapidly and became a concern in recent years. This paper examines the relationship between house price in Nanjing, structural attributes of the property, and location using open data collected from Lianjia.com, and predict house price in Nanjing with different models. We find a geographically-imbalanced distribution of house price in Nanjing with large variance within and between each district. By comparing the MAE and RMSE, we find the random forest model gives a better prediction accuracy than the multiple linear regression model. Further work could include geocoding data to perform spatial autocorrelation analysis that consider the spatial effect in the data. "
 format: pdf
 number-sections: true
 toc: false
@@ -13,7 +13,12 @@ bibliography: references.bib
 
 # Introduction
 
-Gulou, Qinhuai, Xuanwu, Jianye, Qixia, Yuhuatai districts are considered as inner city while Pukou, Jiangning, Lishui, Gaochun, Liuhe districts are considered as suburban areas of Nanjing.
+House prices in China has grown rapidly since 2000, and cities such as Shanghai, Beijing, and Shenzhen are among the highest around the world today [@citeHouseincrease]. Nanjing, which is located in the heart of Yangtze River Delta in eastern China and approximately 300 km from Shanghai, is the capital city for Jiangsu Province, one of the most economically developed provinces in China [@citeNanjing]. The house price in Nanjing has been a concern due to increased population in recent years [@citeConcern].
+
+In this paper, we investigate how structural attributes and location of house affect the total house price and explore the characteristics of residential housing. We are also interested in predicting house price in Nanjing using different models. We use` Python` to collect data from Lianjia.com and `R` to clean and analyze collected data. We construct a multiple linear regression model with total house price explained by 9 other variables representing structural characteristics and location, and a random forest regression model with same variables. We find that the house price in Nanjing is geographically-imbalanced and even the variance within each district is large, indicating possible income and wealth inequality. Comparing two models with Mean Absolute Error (MAE) and Root Mean Squared Error (RMSE), we find that the random forest model gives a better prediction accuracy on both test and train data, indicating possible non-linear relationships between variables. Further work could include geospatial data to find spatial correlations and consider a more comprehensive model including more attributes such as surronding environment.
+
+The remainder of this paper is structured as follows: @sec-data discusses the data with @sec-data_description including information about data collection and data cleaning results, and @sec-data_visualization including graphs and tables representing relationships between variables and distributions of variables; @sec-model introduces the split of train/test data and two models: a multiple linear regression model and a random forest regression model, and specifies parameters; @sec-result shows the estimates of fitted models and compares two models; @sec-discussion includes discussions about model results and implications with @sec-weakness talking about the weaknesses and future improvement.
+
 
 # Data
 
@@ -127,7 +132,7 @@ We find from @fig-char that the numbers of house each districts in our data were
 #| echo: false
 #| message: false
 #| warning: false
-#| fig-cap: Proportion of house with difference decoration status and facing south in 11 districts
+#| fig-cap: Proportion of house with difference decoration status and whether facing south in 11 districts
 #| fig-subcap: 
 #|   - "South-facing"
 #|   - "Decoration"
@@ -141,7 +146,7 @@ data |> group_by(District, Facing_South) |>
   theme_minimal() +
   labs(y = "Number of house", fill = "Whether south-facing") +
   scale_fill_manual(values = c("#A8D8B9", "#FFD966"), labels = c("No", "Yes")) +
-  theme(legend.position = "bottom", axis.text = element_text(size = 7))
+  theme(legend.position = "bottom", axis.text = element_text(size = 8))
 
 data |> group_by(District, Furnished) |>
   summarise(n = n()) |>
@@ -150,7 +155,7 @@ data |> group_by(District, Furnished) |>
   labs(y = "Number of house", fill = "Decoration status") +
   theme_minimal() +
   scale_fill_manual(values = c("#7FCCE5", "#FF9A8B", "#A8D8B9", "#FFD966")) +
-  theme(legend.position = "bottom", axis.text = element_text(size = 7))
+  theme(legend.position = "bottom", axis.text = element_text(size = 8))
 ```
 
 @fig-area and @fig-price shows the how the total house price in each districts and Nanjing city as a total related to area and unit price respectively. The blue line is the linear fitted line and the red line is a fitted line without designating methods. From @fig-area we find that although the total price increases with area, the increase rate in each district was different with Lishui district had a notable slow rate compared with others. The increase rate indeed is just the unit price, so this is consistent with what we found from @tbl-price. We could also see that some districts had larger variance in area and total price which can simply inferred from axis scale. Pukou district had a large variance of total price with highest total price over 4000 ten-thousand yuan as well as for area.
@@ -211,7 +216,24 @@ data |>
 
 # Model
 
+We will use two machine learning algorithms in this analysis: a multiple linear regression model, and a random forest regression model. We will randomly split our data into training and testing datasets with 80% being training data and 20% being testing data.
+
 ## Multiple Linear Regression
+
+The multiple linear regression model is shown as:
+
+\begin{align*}
+Y = \beta_{0} + \sum^{i=1}_{n} \beta_ix_i + \epsilon = \beta_0 + \beta_1x_1 + \beta_2x_2 + \cdots + \beta_nx_n + \epsilon  
+\end{align*}
+
+where 
+
+* $Y$ is the response variables `Total_Price`
+* $x_i(i = 1,2,\cdots,n)$ are explanatory variables. In this case we have 9 explanatory variables
+* $\beta_0$ is the intercept of the model
+* $b_i(i = 1,2,\cdots,n)$ are regression coefficients
+* $\epsilon$ is the random error
+
 ```{r}
 #| echo: false
 #| warning: false
@@ -258,6 +280,7 @@ rmse_rf_train <- round(rmse(train$Total_Price, predict_rf_train),1)
 
 ```
 
+
 ```{r}
 #| label: mlg
 #| echo: false
@@ -274,6 +297,7 @@ rmse_mlg_train <- round(rmse(train$Total_Price, predict_mlg_train),1)
 
 ```
 
+
 ```{r}
 #| label: tbl-metrics
 #| tbl-cap: Summary of different metrics for test and train data for two models
@@ -289,6 +313,7 @@ kable(metrics)
   
 ```
 
+
 ```{r}
 #| label: tbl-model
 #| tbl-cap: Summary of the multiple linear regression model
@@ -300,12 +325,16 @@ modelsummary(model_mlg)
 
 ```
 
+
 ```{r}
 #| label: fig-model
-#| fig-cap: Variable importance of the random forest model based on MSE and Node Purity
 #| echo: false
 #| message: false
 #| warning: false
+#| fig-cap: Variable importance of the random forest model based on MSE and Node Purity
+#| fig-subcap: 
+#|   - "MSE"
+#|   - "Node Purity"
 #| layout-ncol: 2
 
 ImpData <- as.data.frame(importance(model_rf))
@@ -346,9 +375,12 @@ RUNNING TIME
 
 # Discussion
 
+In 2013, the Nanjing Government adjusted the boundaries and administrative divisions of Nanjing. Since then, there are 11 districts in Nanjing with Gulou, Qinhuai, Xuanwu, Jianye districts considered as inner proper while Qixia, Yuhuatai, Pukou, Jiangning, Lishui, Gaochun, Liuhe districts are considered as suburban areas of Nanjing [@citeDivision].
+
+
 residential structure, different from canadian. floor level regards to population density
 
-district area difference, population difference, other spatial data for detailed analysis.
+district area difference, population difference
 
 CBD, City center
 
@@ -361,7 +393,9 @@ income and wealth inequality
 
 ## Weakness and future work
 
-web scrapping maximun 100 pages
+web scrapping maximum 100 pages
+
+Hedonic pricing model, other spatial data for detailed analysis.
 
 \newpage
 
