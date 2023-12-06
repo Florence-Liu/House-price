@@ -139,6 +139,7 @@ merged_data <- merged_data |>
   rename(Furnished = Furnished_Eng, Total_Price = `Total price`,
          Living_Room = `Living/dining room`, Unit_Price = `Unit price`)
 
+
 ### Convert variable types
 
 merged_data$Total_Price <- as.numeric(merged_data$Total_Price)
@@ -152,6 +153,10 @@ merged_data$Total_Floors <- as.numeric(merged_data$Total_Floors)
 merged_data$Detailed_Floor <- as.numeric(merged_data$Detailed_Floor)
 merged_data$Facing_South <- as.factor(merged_data$Facing_South)
 
+### Convert units for Total_Price and Unit_Price into thousands yuan
+
+merged_data$Total_Price <- merged_data$Total_Price * 10
+merged_data$Unit_Price <- merged_data$Unit_Price / 1000
 
 ### Remove missing values
 
