@@ -22,7 +22,7 @@ The remainder of this paper is structured as follows: @sec-data discusses data c
 
 # Data {#sec-data}
 
-We used `Python` [@citePython] to obtain the datasets and `R` [@citeR] to do the analysis in this paper. We used pakage `requests` [@citeRequests], `parsel` [@citeParsel], and `csv` [@citeCsv] in `Python` to scrape the data, and then in `R`, we used packages `tidyverse` [@citeTidyverse], `stringr` [@citeStringr], and `here` [@citeHere] to clean and load the data as well as create figures. We used package `latex2expand` [@citeLatex2expand] to add labels to figures, `knitr` [@citeKnitr], `broom` [@citeBroom], and `gt` [@citeGt] to generate tables, and `corrplot` [@citeCorrplot] to make the correlation plot. We also used package `randomForest` [@citeRandomforest] and `Metrics` [@citeMetrics] to build up a Random Forest model and compare the results with Multiple Linear Regression model using different metrics. The color style of the figures was created referring to a R colors cheet-sheet [@citeRcolor].
+We used `Python` [@citePython] to obtain the datasets and `R` [@citeR] to do the analysis in this paper. We used pakage `requests` [@citeRequests], `parsel` [@citeParsel], and `csv` [@citeCsv] in `Python` to scrape the data, and then in `R`, we used packages `tidyverse` [@citeTidyverse], `stringr` [@citeStringr], and `here` [@citeHere] to clean and load the data as well as create figures. We used package `latex2exp` [@citeLatex2exp] to add labels to figures, `knitr` [@citeKnitr], `broom` [@citeBroom], and `gt` [@citeGt] to generate tables, and `corrplot` [@citeCorrplot] to make the correlation plot. We also used package `randomForest` [@citeRandomforest] and `Metrics` [@citeMetrics] to build up a Random Forest model and compare the results with Multiple Linear Regression model using different metrics. The color style of the figures was created referring to a R colors cheet-sheet [@citeRcolor].
 
 ## Data description {#sec-data_description}
 
@@ -55,7 +55,7 @@ data <- read_csv(here("output/data/cleaned_data.csv"),
 
 ```{r}
 #| label: tbl-data
-#| tbl-cap: Description for variables
+#| tbl-cap: Description for variables in the house price dataset for Nanjing
 #| echo: false
 #| message: false
 #| warning: false
@@ -75,7 +75,7 @@ kable(data.frame(var, type, def),
 
 ```{r}
 #| label: tbl-price
-#| tbl-cap: Descriptive statistics about house price in each districts
+#| tbl-cap: Descriptive statistics about average house price, unit price, and floor area in each district
 #| echo: false
 #| message: false
 #| warning: false
@@ -93,7 +93,7 @@ data |> group_by(District) |>
 
 ```{r}
 #| label: fig-con
-#| fig-cap: Distribution of Area, Total Price, and Unit Price
+#| fig-cap: Distribution of floor area, house price, and unit price in Nanjing
 #| echo: false
 #| message: false
 #| warning: false
@@ -104,7 +104,7 @@ df_con <- gather(df_con)
 df_con |> ggplot(aes(x = value)) +
   geom_histogram(fill = "#A8D8B9") +
   facet_wrap(~key, scales = "free") +
-  labs(y = "Number of house", x = "Variable value") +
+  labs(y = "Number of houses", x = "Variable value") +
   theme_minimal() +
   theme(axis.text = element_text(size = 7))
 
@@ -114,7 +114,7 @@ From @fig-dis we find that most of the listed houses had 2 or 3 bedrooms and 1 t
 
 ```{r}
 #| label: fig-dis
-#| fig-cap: Number of house with different bedroom numbers, living room numbers, total floors, and detailed floor
+#| fig-cap: Number of houses with different bedroom numbers, living room numbers, total floors, and detailed floor in Nanjing
 #| echo: false
 #| message: false
 #| warning: false
@@ -125,7 +125,7 @@ df_dis <- gather(df_dis)
 df_dis |> ggplot(aes(x = value)) +
   geom_bar(fill = "#A8D8B9") +
   facet_wrap(~key, scales = "free") +
-  labs(y = "Number of House", x = "Variable value") +
+  labs(y = "Number of houses", x = "Variable value") +
   theme_minimal() +
   theme(axis.text = element_text(size = 7))
 ```
@@ -137,7 +137,7 @@ We find from @fig-char that the number of houses in each districts in our data w
 #| echo: false
 #| message: false
 #| warning: false
-#| fig-cap: Proportion of house with difference decoration status and whether facing south in 11 districts
+#| fig-cap: Proportion of houses with different decoration status and orientations in 11 districts
 #| fig-subcap: 
 #|   - "South-facing"
 #|   - "Decoration"
@@ -149,7 +149,7 @@ data |> group_by(District, Facing_South) |>
   ggplot(aes(x = District, y = n, fill = factor(Facing_South))) +
   geom_bar(stat = "identity") +
   theme_minimal() +
-  labs(y = "Number of house", fill = "Whether south-facing") +
+  labs(y = "Number of houses", fill = "Whether south-facing") +
   scale_fill_manual(values = c("#A8D8B9", "#FFD966"), labels = c("No", "Yes")) +
   theme(legend.position = "bottom", axis.text = element_text(size = 8))
 
@@ -157,7 +157,7 @@ data |> group_by(District, Furnished) |>
   summarise(n = n()) |>
   ggplot(aes(x = District, y = n, fill = factor(Furnished))) +
   geom_bar(stat = "identity") +
-  labs(y = "Number of house", fill = "Decoration status") +
+  labs(y = "Number of houses", fill = "Decoration status") +
   theme_minimal() +
   scale_fill_manual(values = c("#7FCCE5", "#FF9A8B", "#A8D8B9", "#FFD966")) +
   theme(legend.position = "bottom", axis.text = element_text(size = 8))
@@ -167,7 +167,7 @@ data |> group_by(District, Furnished) |>
 
 ```{r}
 #| label: fig-area
-#| fig-cap: Relationship between total house price and floor area for 11 districts and Nanjing city in total
+#| fig-cap: Relationship between house price and floor area for 11 districts and Nanjing city in total
 #| echo: false
 #| message: false
 #| warning: false
@@ -195,7 +195,7 @@ data |>
 
 ```{r}
 #| label: fig-price
-#| fig-cap: Relationship between total house price and unit price for 11 districts and Nanjing city in total
+#| fig-cap: Relationship between total price and unit price for 11 districts and Nanjing city in total
 #| echo: false
 #| message: false
 #| warning: false
@@ -298,7 +298,7 @@ In the process of RF, the number of trees in the forest, the number of candidate
 
 ```{r}
 #| label: tbl-model
-#| tbl-cap: Summary of the multiple linear regression model
+#| tbl-cap: Summary of the coefficient estimates for Multiple Linear Regression model
 #| echo: false
 #| message: false
 #| warning: false
@@ -322,7 +322,7 @@ broom::tidy(model_mlg) |> gt() |>
 #| echo: false
 #| message: false
 #| warning: false
-#| fig-cap: Variable importance of the random forest model based on MSE and Node Purity
+#| fig-cap: Variable importance of the Random Forest model based on MSE and Node Purity
 #| fig-subcap: 
 #|   - "MSE"
 #|   - "Node Purity"
@@ -361,7 +361,7 @@ ggplot(ImpData, aes(x=Var.Names_pur, y=`IncNodePurity`)) +
 | RMSE |$\sqrt{\frac{1}{n}\sum^{n}_{i=1}(y_i-\hat{y}_i)^2}$| 
 | $R^2$ |$1-\frac{\sum^{n}_{i=1}(y_i-\hat{y}_i)^2}{\sum^{n}_{i=1}(y_i-\bar{y}_i)^2}$|
 
-:Expression for MAE, RMSE, and $R^2$ {#tbl-expression}
+:Mathematical expression for 3 evaluation metrics: MAE, RMSE, and $R^2$ {#tbl-expression}
 
 There are three metrics being used to evaluate the two models: MAE, RMSE, and $\mbox{R}^2$. Mean Absolute Error (MAE) measures the average absolute difference between the predicted value and actual values [@citeMAE]. Root Mean Squared Error (RMSE) measures the square root of the average squared difference between the predicted value and the actual value [@citeRMSE]. The coefficient of determination ($R^2$) measures the proportion of the total variability in the response variable that can be explained by the model [@citeR2]. The expressions for the three metrics are shown in @tbl-expression. Lower values in MAE and RMSE and higher value (between 0 and 1) in $R^2$ suggest better model performance.
 
@@ -416,7 +416,7 @@ r2_mlg_train <- round(cor(predict_mlg_train, train$Total_Price)^2,3)
 
 ```{r}
 #| label: tbl-metrics
-#| tbl-cap: Summary of different metrics for test and train data for two models
+#| tbl-cap: Results of MAE, RMSE, and $R^2$ for training data, testing data, and all datasets for MLR model and RF model
 #| echo: false
 #| message: false
 #| warning: false
@@ -460,7 +460,7 @@ Several factors contribute to the better prediction performance of RF model. Acc
 
 ```{r}
 #| label: fig-cor
-#| fig-cap: Correlation between each numeric variables
+#| fig-cap: Correlation between each numerical variable in the house price dataset for Nanjing
 #| echo: false
 #| warning: false
 #| message: false
