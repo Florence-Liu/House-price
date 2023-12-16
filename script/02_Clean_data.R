@@ -147,8 +147,8 @@ merged_data$Unit_Price <- as.numeric(merged_data$Unit_Price)
 merged_data$District <- as.character(merged_data$District)
 merged_data$Area <- as.numeric(merged_data$Area)
 merged_data$Furnished <- as.character(merged_data$Furnished)
-merged_data$Bedroom <- as.numeric(merged_data$Bedroom)
-merged_data$Living_Room <- as.numeric(merged_data$Living_Room)
+merged_data$Bedroom <- as.integer(merged_data$Bedroom)
+merged_data$Living_Room <- as.integer(merged_data$Living_Room)
 merged_data$Total_Floors <- as.numeric(merged_data$Total_Floors)
 merged_data$Detailed_Floor <- as.numeric(merged_data$Detailed_Floor)
 merged_data$Facing_South <- as.factor(merged_data$Facing_South)
@@ -175,8 +175,8 @@ cleaned_data$Unit_Price |> class() == "numeric"
 cleaned_data$District |> class() == "character"
 cleaned_data$Area |> class() == "numeric"
 cleaned_data$Furnished |> class() == "character"
-cleaned_data$Bedroom |> class() == "numeric"
-cleaned_data$Living_Room |> class() == "numeric"
+cleaned_data$Bedroom |> class() == "integer"
+cleaned_data$Living_Room |> class() == "integer"
 cleaned_data$Total_Floors |> class() == "numeric"
 cleaned_data$Detailed_Floor |> class() == "numeric"
 cleaned_data$Facing_South |> class() == "factor"
@@ -195,3 +195,4 @@ cleaned_data$Area |> min() > 0
 
 #### Save data ####
 write_csv(cleaned_data, "output/data/cleaned_data.csv")
+
