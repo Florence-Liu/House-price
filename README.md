@@ -1,8 +1,8 @@
-# Exploring and Predicting House Price in Nanjing: Geographically Imbalanced Distribution Across Districts and the Crucial Role of Unit Price and Bedroom Count in Prediction
+# Exploring and Predicting House Prices in Nanjing, China: Geographically Imbalanced Distribution Across Districts and the Crucial Role of Unit Price and Bedroom Count in Prediction
 
 ## Overview
 
-This paper analyzes house prices distribution in Nanjing and predicts house prices with two models: a Random Forest model and a Multiple Linear Regression model. The data was obtained by web scraping using Python from Lianjia.com. 
+This paper analyzes house prices distribution in Nanjing, China and predicts house prices with two models: a Random Forest model and a Multiple Linear Regression model. The data was obtained by web scraping using Python from Lianjia.com. 
 
 
 ## File Structure
